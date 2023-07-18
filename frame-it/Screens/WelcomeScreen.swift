@@ -8,12 +8,10 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-
-
 let devices: [Device] = [
-    Device(name: "iPhone 8", frame: Image("iphone8-frame")),
-    Device(name: "iPhone Xr", frame: Image("iphonexr-frame"))
-    // Add more devices and their corresponding frames here
+    Device(name: "iPhone 13 Pro", frame: Image("iPhone_13_Pro")),
+    Device(name: "iPhone 8", frame: Image("iPhone_8")),
+    Device(name: "Pixel 5", frame: Image("pixel_5"))
 ]
 
 struct WelcomeScreen: View {
@@ -78,10 +76,10 @@ struct WelcomeScreen: View {
                     }
                     return true
                 }
-
-
-
-
+            
+            
+            
+            
             
             List(images, id: \.id) { imageWrapper in
                 HStack {
@@ -110,6 +108,10 @@ struct WelcomeScreen: View {
                 
                 Button(action: {
                     showContextMenu = true
+                    
+                    Task {
+                        await processImages()
+                    }
                 }) {
                     Text("Frame it!")
                 }
@@ -117,21 +119,49 @@ struct WelcomeScreen: View {
             
         }
         .contextMenu(menuItems: {
-            Button(action: processImages) {
+            Button(action: {
+                Task {
+                    await processImages()
+                }
+            }) {
                 Text("Select Location")
             }
         })
         .padding()
     }
     
-    func processImages() {
+    func processImages() async {
         // Process the images and add the device overlay
-        for (index, image) in images.enumerated() {
+        for (index, imageWrapper) in images.enumerated() {
             let deviceFrame = selectedDevice.frame
-            // Apply device frame overlay to the image here
+            
+            let processedImage = deviceFrame // add the device frame first in order to init the image with the size of the frame
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .overlay(imageWrapper.image) // add the screenshot on top of the frame
+                .overlay(deviceFrame) // add again the device frame, otherwhise the screenshot would cover some part of the frame
             
             // Save the processed image
-            // ...
+            guard let cgImage = await ImageRenderer(content: processedImage).cgImage else {
+                return
+            }
+            
+            let nsImage = NSImage(cgImage: cgImage, size: .init(width: 1024, height: 1024))
+            let tiffData = nsImage.tiffRepresentation
+            let bitmapImageRep = NSBitmapImageRep(data: tiffData!)
+            let pngData = bitmapImageRep?.representation(using: .png, properties: [:])
+            
+            let downloadsFolderURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
+            let fileURL = downloadsFolderURL
+                .appendingPathComponent("framed_\(imageWrapper.fileName.removingExtension).png")
+            
+            do {
+                try pngData?.write(to: fileURL)
+                print("Saved processed image at: \(fileURL.path)")
+            } catch {
+                print("Error saving processed image: \(error.localizedDescription)")
+            }
+            
             
             // Print the processed image name
             print("Processed Image \(index+1)")

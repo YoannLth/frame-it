@@ -13,6 +13,7 @@
 		3C5C8D792A67427500F42185 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C5C8D782A67427500F42185 /* WelcomeScreen.swift */; };
 		3C5C8D7B2A67429A00F42185 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C5C8D7A2A67429A00F42185 /* Device.swift */; };
 		3C5C8D7D2A674C0E00F42185 /* ImageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C5C8D7C2A674C0E00F42185 /* ImageWrapper.swift */; };
+		3C5C8D812A67537200F42185 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C5C8D802A67537200F42185 /* String+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		3C5C8D782A67427500F42185 /* WelcomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
 		3C5C8D7A2A67429A00F42185 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		3C5C8D7C2A674C0E00F42185 /* ImageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWrapper.swift; sourceTree = "<group>"; };
+		3C5C8D802A67537200F42185 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				3C5C8D6A2A6741A400F42185 /* frame_itApp.swift */,
 				3C5C8D7F2A674C3400F42185 /* Models */,
 				3C5C8D7E2A674C2800F42185 /* Screens */,
+				3C5C8D802A67537200F42185 /* String+Extensions.swift */,
 			);
 			path = "frame-it";
 			sourceTree = "<group>";
@@ -159,6 +162,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C5C8D812A67537200F42185 /* String+Extensions.swift in Sources */,
 				3C5C8D7B2A67429A00F42185 /* Device.swift in Sources */,
 				3C5C8D7D2A674C0E00F42185 /* ImageWrapper.swift in Sources */,
 				3C5C8D792A67427500F42185 /* WelcomeScreen.swift in Sources */,
