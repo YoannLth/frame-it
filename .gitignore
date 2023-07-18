@@ -1,0 +1,12 @@
+.DS_Store
+BuildTools/.build/**
+DerivedData/**
+ci/build/
+ci/fastlane/README.md
+ci/fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+*.mobileprovsion
+*.xcuserstate
+**/xcuserdata/**
