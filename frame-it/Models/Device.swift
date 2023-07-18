@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct Device: Identifiable, Hashable {
+struct Device: Identifiable, Equatable, Hashable {
     let id = UUID()
     let name: String
     let frame: Image
