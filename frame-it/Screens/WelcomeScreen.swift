@@ -17,9 +17,8 @@ let devices: [Device] = [
 struct WelcomeScreen: View {
     @State private var images: [ImageWrapper] = []
     @State private var selectedDevice: Device = devices.first!
-    @State private var showContextMenu = false
     
-    
+    // MARK: - UI
     
     struct DropView: View {
         var body: some View {
@@ -49,37 +48,8 @@ struct WelcomeScreen: View {
             DropView()
                 .padding()
                 .onDrop(of: [.fileURL], isTargeted: nil) { providers, _ in
-                    for provider in providers {
-                        if provider.hasItemConformingToTypeIdentifier("public.file-url") {
-                            provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { urlData, error in
-                                if let error = error {
-                                    print("Error loading image: \(error.localizedDescription)")
-                                    return
-                                }
-                                
-                                if let urlData = urlData as? Data, let url = URL(dataRepresentation: urlData, relativeTo: nil) {
-                                    if let image = NSImage(contentsOf: url) {
-                                        let fileName = provider.suggestedName ?? url.lastPathComponent
-                                        DispatchQueue.main.async {
-                                            images.append(ImageWrapper(image: Image(nsImage: image), fileName: fileName))
-                                        }
-                                    } else {
-                                        print("Error loading image: Invalid image data at \(url)")
-                                    }
-                                } else {
-                                    print("Error loading image: Invalid URL data")
-                                }
-                            }
-                        } else {
-                            print("Error loading image: Item is not a valid file URL")
-                        }
-                    }
-                    return true
+                    onFilesDropped(providers: providers)
                 }
-            
-            
-            
-            
             
             List(images, id: \.id) { imageWrapper in
                 HStack {
@@ -107,8 +77,6 @@ struct WelcomeScreen: View {
                 }
                 
                 Button(action: {
-                    showContextMenu = true
-                    
                     Task {
                         await processImages()
                     }
@@ -116,23 +84,44 @@ struct WelcomeScreen: View {
                     Text("Frame it!")
                 }
             }
-            
         }
-        .contextMenu(menuItems: {
-            Button(action: {
-                Task {
-                    await processImages()
-                }
-            }) {
-                Text("Select Location")
-            }
-        })
         .padding()
     }
     
-    func processImages() async {
+    // MARK: - Functions
+    
+    private func onFilesDropped(providers: [NSItemProvider]) -> Bool {
+        for provider in providers {
+            guard provider.hasItemConformingToTypeIdentifier("public.file-url") else {
+                print("Error loading image: Item is not a valid file URL")
+                break
+            }
+            
+            provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { urlData, error in
+                if let error = error {
+                    print("Error loading image: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let urlData = urlData as? Data,
+                      let url = URL(dataRepresentation: urlData, relativeTo: nil),
+                      let image = NSImage(contentsOf: url) else {
+                    print("Error loading image: Invalid URL data")
+                    return
+                }
+                
+                let fileName = provider.suggestedName ?? url.lastPathComponent
+                DispatchQueue.main.async {
+                    images.append(ImageWrapper(image: Image(nsImage: image), fileName: fileName))
+                }
+            }
+        }
+        return true
+    }
+    
+    private func processImages() async {
         // Process the images and add the device overlay
-        for (index, imageWrapper) in images.enumerated() {
+        for imageWrapper in images {
             let deviceFrame = selectedDevice.frame
             
             let processedImage = deviceFrame // add the device frame first in order to init the image with the size of the frame
@@ -161,16 +150,14 @@ struct WelcomeScreen: View {
             } catch {
                 print("Error saving processed image: \(error.localizedDescription)")
             }
-            
-            
-            // Print the processed image name
-            print("Processed Image \(index+1)")
         }
         
         // Clear the images
         images.removeAll()
     }
 }
+
+// MARK: - Preview
 
 struct WelcomeScreen_Previews: PreviewProvider {
     static var previews: some View {
